@@ -15,18 +15,23 @@ def get_date(d=0, UTC=0):
 
 def adlogin_book_with_feedback(task, sleeptime=0.1):
     try:
-        t = Booker(task.GetUser(), task)
+        t = Booker(task.getUser(), task)
         t.login()
+        logging.info(f'adlogin_book_with_feedback: {task["username"]} logged in')
         while get_date(d=1, UTC=8) != task['date']:
             sleep(sleeptime)
+        logging.info(f'adlogin_book_with_feedback: {task["username"]} start booking')
         feedback = t.book()
         if feedback:
-            task.ChangeState('booked')
+            task.changeState('booked')
+            logging.info(f'adlogin_book_with_feedback: {task["username"]} booked')
         else:
-            task.ChangeState('failed')
+            task.changeState('failed')
+            logging.info(f'adlogin_book_with_feedback: {task["username"]} failed')
     except Exception as e:
+        task.changeState('failed')
         logging.error(e)
-        task.ChangeState('failed')
+        logging.info(f'adlogin_book_with_feedback: {task["username"]} failed')
 
 
 def adlogin_book_by_date(date):
@@ -59,19 +64,26 @@ def adlogin_book_by_date(date):
         thread_list.append(threading.Thread(target=adlogin_book_with_feedback, args=(i,)))
     for t in thread_list:
         t.start()
+
+    logging.info(f'adlogin_book_by_date: {date} tasks started')
+
+    for t in thread_list:
+        t.join()
+    
+    logging.info(f'adlogin_book_by_date: {date} tasks finished')
         
 
 
 def book_with_feedback(task):
     try:
-        t = Booker(task.GetUser(), task)
+        t = Booker(task.getUser(), task)
         feedback = t.book()
         if feedback:
-            task.ChangeState('booked')
+            task.changeState('booked')
         else:
-            task.ChangeState('failed')
+            task.changeState('failed')
     except:
-        task.ChangeState('failed')
+        task.changeState('failed')
 
 
 def book_by_date(date):
