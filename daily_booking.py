@@ -82,7 +82,9 @@ def book_with_feedback(task):
             task.changeState('booked')
         else:
             task.changeState('failed')
-    except:
+    except Exception as e:
+        logging.error(e)
+        logging.error(f'book_with_feedback: {task["username"]} failed')
         task.changeState('failed')
 
 

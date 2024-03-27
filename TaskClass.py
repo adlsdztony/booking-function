@@ -69,6 +69,10 @@ class SingleStudyRoom(Task):
                 yield 1
             elif t == '18002200':
                 yield 2
+            elif t == '09001300':
+                yield 0
+            elif t == '13001700':
+                yield 1
 
     def getFacility(self):
         return str(int(self['room'][-1].split(' ')[-1]) - 24)
@@ -90,12 +94,36 @@ class StudyRoom(Task):
     def getFacility(self):
         return str(int(self['room'][-1].split(' ')[-1]) + 256)
 
+class ConceptAndCreationRoom(Task):
+    def setUp(self):
+        self['FacilityType'] = '35'
+        self['Floor'] = '2'
+        self['Library'] = '3'
+        self['Facility'] = self.getFacility()
+
+    def getSessions(self):
+        for t in self['times']:
+            if t == '08301300':
+                yield 0
+            elif t == '13001800':
+                yield 1
+            elif t == '18002200':
+                yield 2
+            elif t == '09001300':
+                yield 0
+            elif t == '13001700':
+                yield 1
+
+    def getFacility(self):
+        return str(int(self['room'][-1].split(' ')[-1]) + 548)
+
     
 
 DIC = {
     'Discussion Room': DiscussionRoom, 
     'Single Study Room (3 sessions)': SingleStudyRoom,
-    'Study Room': StudyRoom
+    'Study Room': StudyRoom,
+    'Concept and Creation Room': ConceptAndCreationRoom
     }
 
 
