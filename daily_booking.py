@@ -10,7 +10,7 @@ import logging
 
 
 def get_date(d=0, UTC=0):
-    next = datetime.datetime.utcnow() + datetime.timedelta(days=d) + datetime.timedelta(hours=UTC)
+    next = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=d) + datetime.timedelta(hours=UTC)
     return next.strftime('%Y-%m-%d')
 
 def adlogin_book_with_feedback(task, sleeptime=0.1):
@@ -31,7 +31,7 @@ def adlogin_book_with_feedback(task, sleeptime=0.1):
     except Exception as e:
         task.changeState('failed')
         logging.error(e)
-        logging.info(f'adlogin_book_with_feedback: {task["username"]} failed')
+        logging.error(f'adlogin_book_with_feedback: {task["username"]} failed')
 
 
 def adlogin_book_by_date(date):
