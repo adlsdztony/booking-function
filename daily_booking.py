@@ -13,12 +13,17 @@ def get_date(d=0, UTC=0):
     next = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=d) + datetime.timedelta(hours=UTC)
     return next.strftime('%Y-%m-%d')
 
-def adlogin_book_with_feedback(task, sleeptime=0.1):
+def get_time(UTC=0):
+    next = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=UTC)
+    return next.strftime('%H%M')
+
+def adlogin_book_with_feedback(task, time="0000", aday=1, sleeptime=0.1):
     try:
         t = Booker(task.getUser(), task)
         t.login()
         logging.info(f'adlogin_book_with_feedback: {task["username"]} logged in')
-        while get_date(d=1, UTC=8) != task['date']:
+        logging.info(f'adlogin_book_with_feedback: {task["username"]} waiting for booking time {task["date"]} {time}')
+        while get_date(d=aday, UTC=8) != task['date'] or get_time(8) != time:
             sleep(sleeptime)
         logging.info(f'adlogin_book_with_feedback: {task["username"]} start booking')
         feedback = t.book()
@@ -34,8 +39,8 @@ def adlogin_book_with_feedback(task, sleeptime=0.1):
         logging.error(f'adlogin_book_with_feedback: {task["username"]} failed')
 
 
-def adlogin_book_by_date(date):
-    taskss = log.find({'date': date, '$or': [{'state': 'prebooked'}, {'state': 'failed'}]})
+def adlogin_book_by_date(date, query, time="0000", aday=1):
+    taskss = log.find(query)
 
     tasklist = sorted(list(taskss), key=lambda x: x['username'])
 
@@ -44,7 +49,7 @@ def adlogin_book_by_date(date):
     if len(tasklist) == 0:
         return
 
-    log.delete_many({'date': date, '$or': [{'state': 'prebooked'}, {'state': 'failed'}]})
+    log.delete_many(query)
 
     # conbine the time of the task from same username
     n = 0
@@ -61,7 +66,7 @@ def adlogin_book_by_date(date):
     for i in tasklist:
         logging.info(f'adlogin_book_by_date: Creating task for {i["username"]}')
         i = createTask(i)
-        thread_list.append(threading.Thread(target=adlogin_book_with_feedback, args=(i,)))
+        thread_list.append(threading.Thread(target=adlogin_book_with_feedback, args=(i, time, aday,)))
     for t in thread_list:
         t.start()
 
@@ -109,5 +114,10 @@ def book_by_book_date(book_date):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
 
-    adlogin_book_by_date(get_date(d=2, UTC=8))
+    date = get_date(d=1, UTC=8)
+    print(date)
+    rooms = ["Concept and Creation Room"]
+    query = {'date': date, 'room': {'$in': rooms}, 'state': {'$in': ['prebooked', 'failed']}, "times": '13001800'}
+    adlogin_book_by_date(date, query, aday=0, time="0830")
