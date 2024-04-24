@@ -39,7 +39,7 @@ def bookCCAfternoon(myTimer: func.TimerRequest) -> None:
     adlogin_book_by_date(date, query, aday=0, time="0830")
 
 
-@app.schedule(schedule="30 29 04 * * *", arg_name="myTimer", run_on_startup=False,
+@app.schedule(schedule="30 59 04 * * *", arg_name="myTimer", run_on_startup=False,
                 use_monitor=False)
 def bookCCNight(myTimer: func.TimerRequest) -> None:
     logging.basicConfig(level=logging.INFO)

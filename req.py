@@ -123,7 +123,7 @@ class Booker:
             "ctl00$main$ddlFacility": self.task['Facility'],
             "ctl00$main$ddlDate": self.task['date'],
             "ctl00$main$txtUserDescription": "",
-            "ctl00$main$hBtnSubmit": "",
+            # "ctl00$main$hBtnSubmit": "",
             "ctl00$main$hBtnEmail": "",
             "ctl00$main$txtEmail": "",
             "ctl00$main$hBtnResult": "",
@@ -135,11 +135,11 @@ class Booker:
         for t, s in zip(self.task['times'], self.task.getSessions()):
             data[f"ctl00$main$listSession${s}"] = t
 
-        r = self.session.post(url, data=data, allow_redirects=False)
+        # r = self.session.post(url, data=data, allow_redirects=False)
 
         data['ctl00$main$ToolkitScriptManager1'] = "ctl00$main$UpdatePanel3|ctl00$main$btnSubmitYes"
         data['ctl00$main$btnSubmitYes'] = "Yes"
-        del data['ctl00$main$hBtnSubmit']
+        # del data['ctl00$main$hBtnSubmit']
 
         r = self.session.post(url, data=data, allow_redirects=False)
 

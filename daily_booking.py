@@ -17,7 +17,7 @@ def get_time(UTC=0):
     next = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=UTC)
     return next.strftime('%H%M')
 
-def adlogin_book_with_feedback(task, time="0000", aday=1, sleeptime=0.1):
+def adlogin_book_with_feedback(task, time="0000", aday=1, sleeptime=0.01):
     try:
         t = Booker(task.getUser(), task)
         t.login()
